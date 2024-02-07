@@ -1,14 +1,19 @@
-import { useEffect, useState } from 'react';
-import { ContactForm } from './ContactForm/ContactForm';
-import { Filter } from './Filter/Filter';
-import { ContactList } from './ContactList/ContactList';
+import { ContactForm } from './components/ContactForm/ContactForm';
+import { Filter } from './components/Filter/Filter';
+import { ContactList } from './components/ContactList/ContactList';
 import { nanoid } from 'nanoid';
 
+import {
+  addContact,
+  deleteContact,
+  setFilter,
+} from './redux/contacts/contactsReducer';
+import { useDispatch, useSelector } from 'react-redux';
+
 export const App = () => {
-  const [contacts, setContacts] = useState(() => {
-    return JSON.parse(localStorage.getItem('contacts')) ?? [];
-  });
-  const [filter, setFilter] = useState('');
+  const dispatch = useDispatch();
+  const contacts = useSelector(store => store.contacts.contacts);
+  const filter = useSelector(store => store.contacts.filter);
 
   const addFriend = formData => {
     const hasDuplicates = contacts.some(
@@ -21,22 +26,20 @@ export const App = () => {
 
     const newFriend = { ...formData, id: nanoid().toString() };
 
-    setContacts(prevState => [...prevState, newFriend]);
+    const action = addContact(newFriend);
+    dispatch(action);
   };
 
   const handleChangeFilter = event => {
     const value = event.target.value;
-    setFilter(value);
+    const action = setFilter(value);
+    dispatch(action);
   };
 
   const handleDeleteProfile = id => {
-    setContacts(contacts.filter(contact => contact.id !== id));
+    const action = deleteContact(id);
+    dispatch(action);
   };
-
-  useEffect(() => {
-    const stringifiedContacts = JSON.stringify(contacts);
-    localStorage.setItem('contacts', stringifiedContacts);
-  }, [contacts]);
 
   const filteredProfiles = contacts.filter(profile =>
     profile.name.toLowerCase().includes(filter.trim().toLowerCase())
