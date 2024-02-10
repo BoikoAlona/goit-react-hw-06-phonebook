@@ -32,7 +32,7 @@ const ContactList = () => {
             </button>
           </li>
         );
-      })};
+      })}
   </ul>
 );
 };

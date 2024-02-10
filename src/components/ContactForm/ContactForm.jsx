@@ -56,6 +56,9 @@ export const ContactForm = () => {
     const action = addContact(newFriend);
     console.log(newFriend);
       dispatch(action);
+
+    setName('');
+    setNumber('');
     };
 
   return (
